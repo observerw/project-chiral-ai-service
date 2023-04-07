@@ -1,0 +1,150 @@
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = "5"
+  interface            = "sync"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  username String    @unique
+  password String
+  phone    String?
+  email    String?   @unique
+  salt     String
+  avatar   String?
+  project  Project[] @relation("ProjectToUser")
+}
+
+model Event {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  unit        Int
+  start       DateTime
+  end         DateTime
+  color       String
+  type        EventType     @default(ATOM)
+  contentId   Int?
+  projectId   Int
+  serial      Int
+  deleted     DateTime?
+  done        Boolean       @default(false)
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  content     EventContent?
+  todos       EventTodo[]
+
+  @@unique([serial, projectId])
+}
+
+model EventContent {
+  id        Int      @id @default(autoincrement())
+  updatedAt DateTime @updatedAt
+  content   String   @default("")
+  eventId   Int      @unique
+  cover     String?
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model EventTodo {
+  id      Int     @id @default(autoincrement())
+  color   String?
+  title   String
+  checked Boolean @default(false)
+  eventId Int?
+  Event   Event?  @relation(fields: [eventId], references: [id])
+}
+
+model Character {
+  id          Int       @id @default(autoincrement())
+  name        String
+  alias       String[]
+  description String?
+  unit        Int?
+  start       DateTime?
+  end         DateTime?
+  deleted     DateTime?
+  avatar      String?
+  projectId   Int       @unique
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, name])
+}
+
+model Scene {
+  id          Int       @id @default(autoincrement())
+  name        String
+  alias       String[]
+  description String?
+  deleted     DateTime?
+  projectId   Int       @unique
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Worldview {
+  id        Int               @id @default(autoincrement())
+  name      String
+  images    String[]
+  deleted   DateTime?
+  projectId Int               @unique
+  sup       Int?              @unique
+  contentId Int?
+  project   Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  super     Worldview?        @relation("contains", fields: [sup], references: [id])
+  subs      Worldview?        @relation("contains")
+  content   WorldviewContent?
+}
+
+model WorldviewContent {
+  id          Int       @id @default(autoincrement())
+  updatedAt   DateTime  @updatedAt
+  cover       String?
+  content     String    @default("")
+  worldviewId Int       @unique
+  worldview   Worldview @relation(fields: [worldviewId], references: [id], onDelete: Cascade)
+}
+
+model Workspace {
+  id        Int     @id @default(autoincrement())
+  origin    String?
+  layout    Json?
+  projectId Int     @unique
+  lock      Boolean @default(false)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Settings {
+  id        Int     @id @default(autoincrement())
+  darkMode  Boolean @default(false)
+  projectId Int     @unique
+  lang      String  @default("cn")
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  serial      Int        @default(0)
+  deleted     DateTime?
+  characters  Character?
+  events      Event[]
+  scenes      Scene?
+  settings    Settings?
+  workspace   Workspace?
+  worldviews  Worldview?
+  user        User[]     @relation("ProjectToUser")
+}
+
+enum EventType {
+  ATOM
+  COLLECTION
+}

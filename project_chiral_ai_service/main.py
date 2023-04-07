@@ -1,7 +1,11 @@
+from prisma import Prisma
+
 from project_chiral_ai_service.rmq_client import RmqClient
 from project_chiral_ai_service.summarize import Summarizer
 
-summarizer = Summarizer()
+prisma = Prisma()
+
+summarizer = Summarizer(prisma=prisma)
 
 rmq_client = RmqClient(
     handlers={
@@ -25,4 +29,3 @@ if __name__ == "__main__":
         main()
     finally:
         close()
-

@@ -4,8 +4,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SUMMARIZE_MODEL = "gpt-3.5-turbo"
-
 POSTGRES_USERNAME = os.environ["POSTGRES_USERNAME"]
 POSTGRES_PASSWORD = os.environ["POSTGRES_PASSWORD"]
 POSTGRES_HOST = os.environ["POSTGRES_HOST"]
@@ -27,6 +25,12 @@ REDIS_HOST = os.environ["REDIS_HOST"]
 REDIS_PORT = os.environ["REDIS_PORT"]
 REDIS_PASSWORD = os.environ["REDIS_PASSWORD"]
 REDIS_URL = os.environ["REDIS_URL"]
+
+FAISS_URL = f"postgresql://{POSTGRES_USERNAME}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/faiss?schema={POSTGRES_SCHEMA}"
+
+SUMMARIZE_MODEL = "gpt-3.5-turbo"
+RETRIEVE_MODEL = "ada"
+ENTITY_MODEL = "gpt-3.5-turbo"
 
 LANG_MAP = {
     'cn': 'Chinese Simplified',

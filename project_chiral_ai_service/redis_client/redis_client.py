@@ -3,7 +3,7 @@ from typing import List
 import redis
 
 from project_chiral_ai_service.constant import *
-from project_chiral_ai_service.redis_client.constant import CharaTable
+from project_chiral_ai_service.redis_client.constant import chara_table
 
 
 class RedisClient:
@@ -21,10 +21,10 @@ class RedisClient:
         self.conn.close()
 
     def get_all_characters(self, project_id: int) -> List[str]:
-        return self.conn.hkeys(CharaTable(project_id))
+        return self.conn.hkeys(chara_table(project_id))
 
     def get_character_id(self, project_id: int, chara_name: str):
-        id = self.conn.hget(CharaTable(project_id), chara_name)
+        id = self.conn.hget(chara_table(project_id), chara_name)
         if id is None:
             return -1
         return int(id)

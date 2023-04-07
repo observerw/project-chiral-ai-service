@@ -1,1 +1,1 @@
-from entity_recognizer import EntityRecognizer
+from .recognizer import EntityRecognizer

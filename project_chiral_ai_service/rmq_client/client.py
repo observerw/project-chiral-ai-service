@@ -3,26 +3,26 @@ import os
 from typing import Dict, Callable
 
 import pika
+from pika import BasicProperties
 
 
 def _handle_request(fn: Callable):
     def inner(ch, method, props, body):
-        print(f"receive request: {body.decode('utf-8')}")
         body = str(body.decode("utf-8"))
         body = json.loads(body)
-        resp = fn(body)
-        resp = resp.json()
+        print(f"receive request: {body}")
+        resp = fn(body).json()
 
         ch.basic_publish(
             exchange='',
             routing_key=props.reply_to,
-            properties=pika.BasicProperties(
+            properties=BasicProperties(
                 correlation_id=props.correlation_id
             ),
             body=resp
         )
         ch.basic_ack(delivery_tag=method.delivery_tag)
-        print(f"response with: {resp}")
+        print(f"response with: {resp.decode('utf-8')}")
 
     return inner
 

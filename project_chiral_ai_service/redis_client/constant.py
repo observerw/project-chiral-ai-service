@@ -1,2 +1,2 @@
-def CharaTable(project_id: int) -> str:
-    return f'chara_{project_id}'
+def chara_table(project_id: int) -> str:
+    return f'{project_id}/chara'
