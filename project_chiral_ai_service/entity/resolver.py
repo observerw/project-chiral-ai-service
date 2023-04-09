@@ -7,18 +7,18 @@ from project_chiral_ai_service.entity.recognizer import EntityRecognizer
 from project_chiral_ai_service.entity.template import EntityPromptParams
 
 
-class EntityReq(BaseModel):
+class EntityResolveReq(BaseModel):
     table: List[CharaItem]
     doc: str
     lang: str
 
 
 class EntityResolver:
-    def __init__(self, recognizer: EntityRecognizer, linker: EntityLinker):
-        self.recognizer = recognizer
-        self.linker = linker
+    def __init__(self):
+        self.recognizer = EntityRecognizer()
+        self.linker = EntityLinker()
 
-    def process(self, params: EntityReq):
+    def process(self, params: EntityResolveReq):
         names = self.recognizer.process(EntityPromptParams(doc=params.doc))
         options = [
             {name: self.linker.process(table=params.table, name=name, lang=params.lang)}
@@ -31,9 +31,9 @@ class EntityResolver:
 if __name__ == "__main__":
     recognizer = EntityRecognizer()
     linker = EntityLinker()
-    resolver = EntityResolver(recognizer=recognizer, linker=linker)
+    resolver = EntityResolver()
 
-    result = resolver.process(EntityReq(
+    result = resolver.process(EntityResolveReq(
         table=[
             CharaItem(id=1, name='木之本樱', alias=['小樱', '魔卡少女']),
             CharaItem(id=2, name='大道寺知世', alias=[]),

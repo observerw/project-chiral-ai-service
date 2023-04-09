@@ -1,1 +1,1 @@
-from .recognizer import EntityRecognizer
+from .resolver import EntityResolver, EntityResolveReq

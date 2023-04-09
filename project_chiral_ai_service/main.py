@@ -1,9 +1,11 @@
+from project_chiral_ai_service.entity import EntityResolver, EntityResolveReq
 from project_chiral_ai_service.rmq_client import RmqClient, RpcHandler
 from project_chiral_ai_service.summarize import Summarizer, SummarizeTitleReq, SummarizeDescReq
 
 # prisma = Prisma()
 
 summarizer = Summarizer()
+entity_resolver = EntityResolver()
 
 rmq_client = RmqClient(
     rpc_handlers={
@@ -15,6 +17,10 @@ rmq_client = RmqClient(
             process=summarizer.summarize_desc,
             request=SummarizeDescReq,
         ),
+        'entity_resolve': RpcHandler(
+            process=entity_resolver.process,
+            request=EntityResolveReq,
+        )
     },
     subscribe_handlers={}
 )

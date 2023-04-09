@@ -23,13 +23,12 @@ The document content may contain foreign names or strange names, please recogniz
 
 "阿万达阿飞砍大辉 is an excellent naval commander who fought alongside E'est Ma Peto." -> ["阿万达阿飞砍大辉", "E'est Ma Peto"]
 
-For situations where no name can be recognized, return empty content:
+For situations where no name can be recognized, return empty list:
 
 "this is a test" -> []
 
 I want you to only reply the array result and nothing else, do not write any explanations.
-
-Here's the document: 
+ 
 "{doc}" -> """,
 )
 
