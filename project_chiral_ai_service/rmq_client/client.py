@@ -1,37 +1,29 @@
-import json
 import os
 from typing import Dict, Callable
 
 import pika
-from pika import BasicProperties
 
-
-def _handle_request(fn: Callable):
-    def inner(ch, method, props, body):
-        body = str(body.decode("utf-8"))
-        body = json.loads(body)
-        print(f"receive request: {body}")
-        resp = fn(body).json()
-
-        ch.basic_publish(
-            exchange='',
-            routing_key=props.reply_to,
-            properties=BasicProperties(
-                correlation_id=props.correlation_id
-            ),
-            body=resp
-        )
-        ch.basic_ack(delivery_tag=method.delivery_tag)
-        print(f"response with: {resp.decode('utf-8')}")
-
-    return inner
+from project_chiral_ai_service.rmq_client.handle_request import RpcHandler, handle_rpc, SubscribeHandler, \
+    handle_subscribe
 
 
 class RmqClient:
-    def __init__(self, handlers: Dict[str, callable]) -> None:
+    def __init__(
+            self,
+            rpc_handlers: Dict[str, RpcHandler],
+            subscribe_handlers: Dict[str, SubscribeHandler]
+    ) -> None:
         self.conn = None
         self.channel = None
-        self.handlers = handlers
+        self.rpc_handlers = rpc_handlers
+        self.subscribe_handlers = subscribe_handlers
+
+    def _register_handler(self, queue: str, handler: Callable):
+        self.channel.queue_declare(queue=queue)
+        self.channel.basic_consume(
+            queue=queue,
+            on_message_callback=handler,
+        )
 
     def connect(self):
         credentials = pika.PlainCredentials(
@@ -47,12 +39,16 @@ class RmqClient:
             )
         )
         self.channel = self.conn.channel()
-        for queue in self.handlers.keys():
-            self.channel.queue_declare(queue=queue)
-            handler = _handle_request(self.handlers[queue])
-            self.channel.basic_consume(
+
+        for queue, handler in self.rpc_handlers.items():
+            self._register_handler(
                 queue=queue,
-                on_message_callback=handler,
+                handler=handle_rpc(handler)
+            )
+        for queue, handler in self.subscribe_handlers.items():
+            self._register_handler(
+                queue=queue,
+                handler=handle_subscribe(handler)
             )
 
         print('rmq_client connected')

@@ -35,4 +35,4 @@ Here's the document:
 
 
 class EntityPromptParams(BaseModel):
-    lang: str
+    doc: str

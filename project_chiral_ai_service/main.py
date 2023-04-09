@@ -1,25 +1,32 @@
-from prisma import Prisma
+from project_chiral_ai_service.rmq_client import RmqClient, RpcHandler
+from project_chiral_ai_service.summarize import Summarizer, SummarizeTitleReq, SummarizeDescReq
 
-from project_chiral_ai_service.rmq_client import RmqClient
-from project_chiral_ai_service.summarize import Summarizer
+# prisma = Prisma()
 
-prisma = Prisma()
-
-summarizer = Summarizer(prisma=prisma)
+summarizer = Summarizer()
 
 rmq_client = RmqClient(
-    handlers={
-        'summarize_title': summarizer.summarize_title,
-        'summarize_desc': summarizer.summarize_desc,
-    }
+    rpc_handlers={
+        'summarize_title': RpcHandler(
+            process=summarizer.summarize_title,
+            request=SummarizeTitleReq,
+        ),
+        'summarize_desc': RpcHandler(
+            process=summarizer.summarize_desc,
+            request=SummarizeDescReq,
+        ),
+    },
+    subscribe_handlers={}
 )
 
 
 def main():
+    # prisma.connect()
     rmq_client.connect()
 
 
 def close():
+    # prisma.disconnect()
     rmq_client.close()
     print('shutdown')
 

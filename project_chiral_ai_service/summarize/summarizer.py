@@ -1,16 +1,21 @@
 from haystack.nodes import PromptNode
-from prisma import Prisma
 
 from project_chiral_ai_service.constant import *
-from project_chiral_ai_service.rmq_client.response import RmqResponse
 from project_chiral_ai_service.summarize.template import title_template, desc_template, TitlePromptParams, \
     DescPromptParams
 from project_chiral_ai_service.summarize.utils import summarize_length
 
 
+class SummarizeTitleReq(TitlePromptParams):
+    pass
+
+
+class SummarizeDescReq(DescPromptParams):
+    pass
+
+
 class Summarizer:
-    def __init__(self, prisma: Prisma) -> None:
-        self.prisma = prisma
+    def __init__(self) -> None:
         self.node = PromptNode(
             model_name_or_path=SUMMARIZE_MODEL,
             api_key=OPENAI_API_KEY,
@@ -18,14 +23,15 @@ class Summarizer:
         )
         print('summarizer ready')
 
-    def summarize_title(self, params):
-        params = TitlePromptParams(**params)
-        data = self.node.prompt(prompt_template=title_template, **params.dict())[0]
+    def summarize_title(self, params: SummarizeTitleReq):
+        data = self.node.prompt(
+            prompt_template=title_template,
+            **params.dict()
+        )[0]
 
-        return RmqResponse(data=data)
+        return data
 
-    def summarize_desc(self, params):
-        params = DescPromptParams(**params)
+    def summarize_desc(self, params: SummarizeDescReq):
         params.keyword = ''.join(params.keyword)
 
         if params.length is None:
@@ -39,4 +45,4 @@ class Summarizer:
                 **params.dict()
             )[0]
 
-        return RmqResponse(data=data)
+        return data

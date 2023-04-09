@@ -3,6 +3,8 @@ from typing import Optional, List
 from haystack.nodes import PromptTemplate
 from pydantic import BaseModel
 
+from project_chiral_ai_service.constant import *
+
 title_template = PromptTemplate(
     name="summarize_title",
     prompt_text=
@@ -33,7 +35,7 @@ desc_template = PromptTemplate(
 
 class DescPromptParams(BaseModel):
     doc: str
-    lang: str = "cn"
+    lang: str = LANG_MAP['cn']
     length: Optional[int] = None
     abstraction: int = 70
     keyword: List[str] = []
