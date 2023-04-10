@@ -3,6 +3,8 @@ from typing import List
 import Levenshtein
 from pydantic import BaseModel
 
+from project_chiral_ai_service.schema import LANG_MAP
+
 
 def LCS(a: str, b: str) -> int:
     m, n = len(a), len(b)
@@ -19,10 +21,10 @@ def LCS(a: str, b: str) -> int:
 
 
 def calc_score(lang: str, name: str, exist_name: str) -> float:
-    if lang == 'cn':
+    if lang == LANG_MAP['cn']:
         return LCS(name, exist_name) / max(len(name), len(exist_name))
 
-    if lang == 'en':
+    if lang == LANG_MAP['en']:
         return Levenshtein.ratio(name.lower(), exist_name.lower())
 
 
@@ -82,7 +84,7 @@ if __name__ == "__main__":
             CharaItem(id=2, name="壮哥", alias=['壮哥哥', '壮哥哥哥'])
         ],
         name='樱酱',
-        lang='cn'
+        lang=LANG_MAP['cn']
     )
 
     print(result)

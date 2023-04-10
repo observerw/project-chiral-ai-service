@@ -15,7 +15,8 @@ def temp(body):
 
 
 class TempReq(BaseModel):
-    pass
+    done: bool
+    id: int
 
 
 rmq_client = RmqClient(

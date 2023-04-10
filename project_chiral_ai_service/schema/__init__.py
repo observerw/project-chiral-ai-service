@@ -1,1 +1,1 @@
-from .lang_type import LangType
+from .lang_type import LangType, LANG_MAP
