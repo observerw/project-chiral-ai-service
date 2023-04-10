@@ -30,9 +30,9 @@ def handle_rpc(handler: RpcHandler):
             except RmqException as e:
                 # 运行时出现问题
                 resp = RmqResponse(code=e.code, message=e.message, data=None)
-        except pydantic.ValidationError:
+        except pydantic.ValidationError as e:
             # request不合法
-            resp = RmqResponse(code=400, data=None)
+            resp = RmqResponse(code=400, message=e.json(), data=None)
 
         resp = resp.json()
         print(f"response with: {resp}")

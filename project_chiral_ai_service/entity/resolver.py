@@ -2,15 +2,30 @@ from typing import List
 
 from pydantic import BaseModel
 
-from project_chiral_ai_service.entity.linker import EntityLinker, CharaItem
+from project_chiral_ai_service.entity.linker import EntityLinker, CharaItem, LinkOption
 from project_chiral_ai_service.entity.recognizer import EntityRecognizer
 from project_chiral_ai_service.entity.template import EntityPromptParams
+from project_chiral_ai_service.schema import LangType
 
 
 class EntityResolveReq(BaseModel):
     table: List[CharaItem]
     doc: str
-    lang: str
+    lang: LangType
+
+
+class Resolved(BaseModel):
+    id: int
+
+
+class Unresolved(BaseModel):
+    name: str
+    options: List[LinkOption]
+
+
+class EntityResolveResp(BaseModel):
+    resolved: List[Resolved] = []
+    unresolved: List[Unresolved] = []
 
 
 class EntityResolver:
@@ -20,12 +35,22 @@ class EntityResolver:
 
     def process(self, params: EntityResolveReq):
         names = self.recognizer.process(EntityPromptParams(doc=params.doc))
-        options = [
-            {name: self.linker.process(table=params.table, name=name, lang=params.lang)}
-            for name in names
-        ]
+        result = EntityResolveResp()
 
-        return options
+        for name in names:
+            options = self.linker.process(table=params.table, name=name, lang=params.lang)
+
+            if len(options) == 1:
+                result.resolved.append(Resolved(
+                    id=options[0].id
+                ))
+            else:
+                result.unresolved.append(Unresolved(
+                    name=name,
+                    options=options
+                ))
+
+        return result
 
 
 if __name__ == "__main__":

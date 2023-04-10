@@ -1,11 +1,22 @@
+from pydantic import BaseModel
+
 from project_chiral_ai_service.entity import EntityResolver, EntityResolveReq
-from project_chiral_ai_service.rmq_client import RmqClient, RpcHandler
+from project_chiral_ai_service.rmq_client import RmqClient, RpcHandler, SubscribeHandler
 from project_chiral_ai_service.summarize import Summarizer, SummarizeTitleReq, SummarizeDescReq
 
 # prisma = Prisma()
 
 summarizer = Summarizer()
 entity_resolver = EntityResolver()
+
+
+def temp(body):
+    print(body)
+
+
+class TempReq(BaseModel):
+    pass
+
 
 rmq_client = RmqClient(
     rpc_handlers={
@@ -22,7 +33,12 @@ rmq_client = RmqClient(
             request=EntityResolveReq,
         )
     },
-    subscribe_handlers={}
+    subscribe_handlers={
+        'event-done': SubscribeHandler(
+            process=temp,
+            request=TempReq,
+        )
+    }
 )
 
 

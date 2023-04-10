@@ -3,12 +3,12 @@ from typing import Optional, List
 from haystack.nodes import PromptTemplate
 from pydantic import BaseModel
 
-from project_chiral_ai_service.constant import *
+from project_chiral_ai_service.schema import LangType
 
 title_template = PromptTemplate(
     name="summarize_title",
     prompt_text=
-    """Provide a short, descriptive title for the given piece of document. The title needs to be in the same language as the original text.
+    """Provide a short, descriptive title for the given piece of document. The title needs to be in the same language as the original text. The title needs to be in {lang}.
     [document]
     {doc}
                 
@@ -18,6 +18,7 @@ title_template = PromptTemplate(
 
 class TitlePromptParams(BaseModel):
     doc: str
+    lang: LangType
 
 
 desc_template = PromptTemplate(
@@ -35,7 +36,7 @@ desc_template = PromptTemplate(
 
 class DescPromptParams(BaseModel):
     doc: str
-    lang: str = LANG_MAP['cn']
+    lang: LangType
     length: Optional[int] = None
     abstraction: int = 70
     keyword: List[str] = []
