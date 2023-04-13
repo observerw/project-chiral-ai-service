@@ -1,0 +1,1 @@
+{"faiss_config_path": "/Users/bytedance/workspace/chiral/project-chiral-ai-service/project_chiral_ai_service/faiss_config.json", "similarity": "dot_product", "embedding_dim": 1024, "sql_url": "postgresql://postgres:7689@120.53.230.250:5432/faiss", "faiss_index_factory_str": "Flat", "return_embedding": true}

@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
+
 POSTGRES_USERNAME = os.environ["POSTGRES_USERNAME"]
 POSTGRES_PASSWORD = os.environ["POSTGRES_PASSWORD"]
 POSTGRES_HOST = os.environ["POSTGRES_HOST"]
@@ -26,10 +28,12 @@ REDIS_PORT = os.environ["REDIS_PORT"]
 REDIS_PASSWORD = os.environ["REDIS_PASSWORD"]
 REDIS_URL = os.environ["REDIS_URL"]
 
-FAISS_URL = f"postgresql://{POSTGRES_USERNAME}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/faiss?schema={POSTGRES_SCHEMA}"
+FAISS_URL = f"postgresql://{POSTGRES_USERNAME}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/faiss"
+FAISS_INDEX_PATH = os.path.join(ROOT_PATH, "faiss_index.faiss")
+FAISS_CONFIG_PATH = os.path.join(ROOT_PATH, "faiss_config.json")
 
 SUMMARIZE_MODEL = "gpt-3.5-turbo"
-RETRIEVE_MODEL = "ada"
+EMBEDDING_MODEL = "ada"
 ENTITY_MODEL = "gpt-3.5-turbo"
 
 LANG_MAP = {

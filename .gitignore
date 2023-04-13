@@ -45,3 +45,4 @@ poetry/core/*
 
 .env
 **/logs/*
+**/faiss_index.faiss
