@@ -1,5 +1,13 @@
+import os
+import sys
+
+from project_chiral_ai_service.api.graph_client import GraphClient
+
+sys.path.append(
+    os.path.join(os.path.dirname(__file__), 'api')
+)
+
 from prisma import Prisma
-from pydantic import BaseModel
 
 from project_chiral_ai_service.entity import EntityResolver, EntityResolveReq
 from project_chiral_ai_service.retriever import Retriever
@@ -8,21 +16,12 @@ from project_chiral_ai_service.subscribe import event_done_process, EventDoneReq
 from project_chiral_ai_service.summarize import Summarizer, SummarizeTitleReq, SummarizeDescReq
 
 prisma = Prisma()
+graph_client = GraphClient()
 
 summarizer = Summarizer()
 entity_resolver = EntityResolver()
 
 retriever = Retriever()
-
-
-def temp(body):
-    print(body)
-
-
-class TempReq(BaseModel):
-    done: bool
-    id: int
-
 
 rmq_client = RmqClient(
     rpc_handlers={
@@ -55,6 +54,7 @@ def main():
 
 def close():
     prisma.disconnect()
+    graph_client.close()
     retriever.close()
     rmq_client.close()
     print('shutdown')

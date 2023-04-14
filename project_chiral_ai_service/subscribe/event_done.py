@@ -12,3 +12,5 @@ class EventDoneReq(BaseModel):
 def event_done_process(prisma: Prisma, retriever: Retriever):
     def inner(body):
         return None
+
+    return inner

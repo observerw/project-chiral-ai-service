@@ -80,10 +80,11 @@ if __name__ == "__main__":
 
     result = linker.process(
         table=[
-            CharaItem(id=1, name='木之本樱', alias=['小樱', '小樱子']),
-            CharaItem(id=2, name="壮哥", alias=['壮哥哥', '壮哥哥哥'])
+            CharaItem(id=1, name='木之本樱', alias=['小樱', '魔卡少女']),
+            CharaItem(id=2, name='大道寺知世', alias=[]),
+            CharaItem(id=3, name='可鲁贝洛斯', alias=['小可']),
         ],
-        name='樱酱',
+        name='小可',
         lang=LANG_MAP['cn']
     )
 
